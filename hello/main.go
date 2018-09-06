@@ -57,7 +57,18 @@ func CreatePerson(w http.ResponseWriter, r *http.Request) {
 	bodyString := string(bodyBytes)
 	fmt.Println(bodyString)
 
-	json.Unmarshal(bodyBytes, &person) // parse JSON to person object
+	/*
+		Parse JSON object without struct
+	*/
+	m := map[string]interface{}{}
+	err := json.Unmarshal(bodyBytes, &m)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(m)
+	fmt.Println(m["firstname"])
+
+	json.Unmarshal(bodyBytes, &person) // parse JSON to person struct object
 	fmt.Println(person.Firstname)
 	people = append(people, person)
 
