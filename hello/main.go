@@ -7,11 +7,11 @@ import (
 	"log"
 	"net/http"
 
-	model "./model"
+	model "./model" // example of import package
 	"github.com/gorilla/mux"
 )
 
-var people []model.Person
+var people []model.Person // imported from model
 
 func main() {
 	router := mux.NewRouter()
@@ -42,6 +42,7 @@ func GetPerson(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	json.NewEncoder(w).Encode(&model.Person{})
 	//r = mux.Vars(r)
 }
@@ -59,7 +60,18 @@ func CreatePerson(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(bodyBytes, &person) // parse JSON to person object
 	fmt.Println(person.Firstname)
 	people = append(people, person)
+
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	json.NewEncoder(w).Encode(people)
 }
-func DeletePerson(w http.ResponseWriter, r *http.Request) {}
+func DeletePerson(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	for index, item := range people {
+		if item.ID == params["id"] {
+			people = append(people[:index], people[index+1:]...)
+			break
+		}
+	}
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	json.NewEncoder(w).Encode(people)
+}
